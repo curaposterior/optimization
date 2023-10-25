@@ -38,11 +38,5 @@ matrix funkcja_celu_lab_2(matrix x, matrix ud1, matrix ud2)
 	matrix y;
 	y = -cos(0.1 * x(0)) * std::exp(-1.0 * pow((0.1 * x(0) - 2 * 3.14), 2)) + 0.002 * pow(0.1 * x(0), 2);
 	
-	for (int x = -10; x < 100; x++)
-	{
-		y = -cos(0.1 * x) * std::exp(-1.0 * pow((0.1 * x - 2 * 3.14), 2)) + 0.002 * pow(0.1 * x, 2);
-		//cout << "function for " << x << " = " << y << endl;
-	}
-	
 	return y;
 }

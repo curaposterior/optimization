@@ -47,8 +47,8 @@ double* expansion(matrix(*ff)(matrix, matrix, matrix), double _x0, double d, dou
 		solution x1(_x0 + d);
 		solution x0(_x0);
 
-		x1.fit_fun(ff);
-		x0.fit_fun(ff);
+		x1.fit_fun(ff, ud1, ud2);
+		x0.fit_fun(ff, ud1, ud2);
 
 		if (x1.y == x0.y)
 		{
@@ -60,7 +60,8 @@ double* expansion(matrix(*ff)(matrix, matrix, matrix), double _x0, double d, dou
 			d = -d;
 			x1.x = x0.x + d;
 
-			x1.fit_fun(ff);
+			x1.fit_fun(ff, ud1, ud2);
+			x0.fit_fun(ff, ud1, ud2);
 			if (x1.y >= x0.y)
 			{
 				p[0] = m2d(x1.x); p[1] = m2d(x0.x - d);
@@ -88,11 +89,15 @@ double* expansion(matrix(*ff)(matrix, matrix, matrix), double _x0, double d, dou
 				x_i_minus = x_i;
 				x_i = x_i_plus;
 			}			
-			x_i_plus = x0.x + ( pow(alpha, i) * d );
+			x_i_plus.x = x0.x + ( pow(alpha, i) * d );
 
+			var(i);
+			var(x_i_minus.x);
+			var(x_i.x);
+			var(x_i_plus.x);
 
-			x_i_plus.fit_fun(ff);	// pierwsze okrazenie - x_plus_1 == x_2
-			x_i.fit_fun(ff);	// pierwsze okrazenie - x_i == x_1
+			x_i_plus.fit_fun(ff, ud1, ud2);	// pierwsze okrazenie - x_plus_1 == x_2
+			x_i.fit_fun(ff, ud1, ud2);	// pierwsze okrazenie - x_i == x_1
 
 		} while ( x_i.y <= x_i_plus.y );
 
@@ -113,9 +118,9 @@ double* expansion(matrix(*ff)(matrix, matrix, matrix), double _x0, double d, dou
 	}
 }
 
-vector<long long> fibonachi(int limit)
+vector<double> fibonachi(int limit)
 {
-	vector<long long> res(2, 1);
+	vector<double> res(2, 1);
 	res[0] = 1;
 	res[1] = 2;
 
@@ -127,59 +132,62 @@ vector<long long> fibonachi(int limit)
 	return res;
 }
 
+#define var(x) ;
+
 solution fib(matrix(*ff)(matrix, matrix, matrix), double _a, double _b, double epsilon, matrix ud1, matrix ud2)
 {
-	/*solution c (b.x(0) - ((fib_tab[k - 1] / fib_tab[k]) * (b.x - a.x)));
-		solution d (a.x + b.x - c.x);
-		
-							// 13
-		for (int i = 0; i <= k - 3; i++)
-		{
-			c.fit_fun(ff);
-			d.fit_fun(ff);
-
-			if (c.y < d.y)
-			{
-				b = d;
-			}
-			else
-			{
-				a = c;
-			}
-						//     16   0 -> 13
-			c = b.x - ((fib_tab[k - i - 2] / fib_tab[k - i - 1]) * (b.x - a.x));
-			d = a.x + b.x - c.x;*/
-
 	try
 	{
 		solution Xopt;
 
 		int k{};
-		vector<long long> fib_tab = fibonachi(80);
+		vector<double> fib_tab = fibonachi(80);
 		for (int i = 0; i < fib_tab.size(); i++) if (fib_tab[i] > ((_b - _a) / epsilon)) { k = i; break; }
 		cout << "k = " << k << "\n";
 
 		
 		solution a (_a);
 		solution b (_b);
+		solution c;
+		solution d;
 
-		solution c(b.x(0) - ((fib_tab[k - 1] / fib_tab[k]) * (b.x(0) - a.x(0))));
-		solution d(a.x(0) + b.x(0) - c.x(0));
 
+		var(a.x);
+		var(b.x);
+		c.x = b.x - (fib_tab[k - 2] / fib_tab[k - 1]) * (b.x - a.x);
+
+
+		d.x = (a.x + b.x - c.x);
+
+		var(c.x);
+		var(d.x);
+
+		//cout << "\n\n\n";
 							// 13
-		for (int i = 0; i <= k - 3; i++)
+		for (int i = 0; i <= k - 3; ++i)
 		{
-			c.fit_fun(ff);
-			d.fit_fun(ff);
+			c.fit_fun(ff, ud1, ud2);
+			d.fit_fun(ff, ud1, ud2);
 
+			var((c.y < d.y));
 			if (c.y < d.y)
 			{
+				//cout << "b - changed\n";
 				b = d;
 			}
 			else
 			{
+				//cout << "a - changed\n";
 				a = c;
 			}
+
+
+			int adder = 0;
+			//					  16   0 -> 13
+			
+			//(fib_tab[k - i - 2] / fib_tab[k - i - 1]
+			c.x = b.x - (fib_tab[k - i- 2] / fib_tab[k - i- 1]) * (b.x - a.x);
+			d.x = a.x + b.x - c.x;
 
 			var(i);
 			var(a.x);
@@ -187,11 +195,6 @@ solution fib(matrix(*ff)(matrix, matrix, matrix), double _a, double _b, double e
 			var(c.x);
 			var(d.x);
 			cout << '\n';
-
-			int adder = 1;
-			//					  16   0 -> 13
-			c = b.x(0) - ((fib_tab[k - i - 2 + adder] / fib_tab[k - i - 1 + adder]) * (b.x(0) - a.x(0)));
-			d = a.x(0) + b.x(0) - c.x(0);
 		}
 		cout << "DONE" << "\n";
 

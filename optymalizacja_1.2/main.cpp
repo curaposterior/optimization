@@ -95,14 +95,14 @@ void lab1()
 	solution opt;
 
 
-	double* borders = expansion(funkcja_celu_lab_2, -50, 10.0, 1.5, Nmax);
-	//cout << "borders (" << borders[0] << ", " << borders[1] << ")\n";
+	double* borders = expansion(funkcja_celu_lab_2, -50, 1.0, 1.5, Nmax);
+	cout << "borders (" << borders[0] << ", " << borders[1] << ")\n";
 
 
 	//opt = fib(funkcja_celu_lab_2, borders[0], borders[1], epsilon);
-	opt = fib(funkcja_celu_lab_2, 60, 65, epsilon);
+	//opt = fib(funkcja_celu_lab_2, 60, 65, epsilon);
 	
-	cout << opt << endl << endl;
+	//cout << opt << endl << endl;
 	solution::clear_calls();
 }
 
