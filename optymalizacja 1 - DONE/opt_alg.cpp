@@ -255,14 +255,72 @@ solution lag(matrix(*ff)(matrix, matrix, matrix), double _a, double _b, double e
 		throw ("solution lag(...):\n" + ex_info);
 	}
 }
+//linia 9 w pseudokodzie, powinno byc PROBUJ(x, s)
+
+solution probuj(solution x, double s)
+{
+	matrix e1(2, 1);
+	matrix e2(2, 1);
+	e1(0) = 1;
+	e1(1) = 0;
+	e2(0) = 0;
+	e2(1) = 1;
+
+	std::vector<matrix> p = { e1, e2 };
+	x.fit_fun(funkcja_celu_lab_3);
+	for (int j = 0; j < 2; j++) {
+		solution pom1(x.x + s * p[j]);
+		solution pom2(x.x - s * p[j]);
+
+		pom1.fit_fun(funkcja_celu_lab_3);
+		pom2.fit_fun(funkcja_celu_lab_3);
+
+		if (pom1.y < x.y) {
+			x.x = x.x + s * p[j];
+		}
+		else if (pom2.y < x.y) {
+			x.x = x.x - s * p[j];
+		}
+	}
+	return x;
+}
 
 solution HJ(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double alpha, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
 	try
 	{
 		solution Xopt;
+		solution x_b;
+		solution _x0;
+		solution x_i_b;
 		//Tu wpisz kod funkcji
-
+		while (true) {
+			x_b = x0;
+			_x0 = x0;
+			_x0 = probuj(_x0, s);
+			_x0.fit_fun(funkcja_celu_lab_3);
+			x_b.fit_fun(funkcja_celu_lab_3);
+			if (_x0.y < x_b.y) {
+				while (true) {
+					x_i_b = x_b;
+					x_b = _x0;
+					_x0 = 2 * x_b.x - x_i_b.x;
+					_x0 = probuj(_x0, s);
+					if (solution::f_calls > Nmax) ERROR;
+					
+					_x0.fit_fun(funkcja_celu_lab_3);
+					x_b.fit_fun(funkcja_celu_lab_3);
+					if (_x0.y < x_b.y) break;
+				}
+				_x0 = x_b;
+			}
+			else {
+				s = alpha * s;
+			}
+			if (solution::f_calls > Nmax) ERROR;
+			if (s >= epsilon) break;
+		}
+		Xopt = x_b;
 		return Xopt;
 	}
 	catch (string ex_info)

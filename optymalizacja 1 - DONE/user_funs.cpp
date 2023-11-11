@@ -1,4 +1,7 @@
 #include"user_funs.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 
 matrix ff0T(matrix x, matrix ud1, matrix ud2)
 {
@@ -41,13 +44,6 @@ matrix funkcja_celu_lab_2(matrix x, matrix ud1, matrix ud2)
 	return y;
 }
 
-matrix f_celu_test(matrix x, matrix ud1, matrix ud2)
-{
-	matrix y;
-	y = pow(x(0), 4) + pow(x(0), 3) - pow(x(0), 2) + 2 * x(0) - 6;
-	return y;
-}
-
 matrix df1(double t, matrix Y, matrix ud1, matrix ud2) {
 	double fOutA = 0, fOutB = 0;
 	double fInB = 0.01, tInB = 10.0;
@@ -71,5 +67,13 @@ matrix ff1R(matrix x, matrix ud1, matrix ud2) {
 		if (max < Y[1](i, 2)) max = Y[1](i, 2);
 	}
 	y = abs(max - 50);
+	return y;
+}
+
+
+matrix funkcja_celu_lab_3(matrix x, matrix ud1, matrix ud2)
+{
+	matrix y;
+	y = pow(x(0), 2) + pow(x(1), 2) - cos(2.5 * M_PI * x(0)) - cos(2.5 * M_PI * x(1)) + 2;
 	return y;
 }

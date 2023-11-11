@@ -22,7 +22,7 @@ int main()
 {
 	try
 	{
-		lab1();
+		lab2();
 	}
 	catch (string EX_INFO)
 	{
@@ -98,73 +98,73 @@ void lab1()
 	
 	// Sprawdzanie Fib (nie dzia³a dla pierwszych parametrów)
 	{
-		//double a, b;
-		//a = -10; b = 10
-							//x = -2,10655e-12;
-							//y = -7,44939e-18;
-							//f_calls = 62					
-							//Exit flag: 0
+		double a, b;
+		a = -10; b = 10;
+						//x = -2,10655e-12;
+						//y = -7,44939e-18;
+						//f_calls = 62					
+						//Exit flag: 0
 
-		//		k - 1, k				k - 2 , k -1
-		//	x = 5, 67444e-06;		x = -1, 37721e-05;
-		//	y = 6, 36536e-16;		y = 4, 14043e-16;
-		//	f_calls = 56			f_calls = 56
-		//	Exit flag : -1			Exit flag : -1
+				/* k - 1, k				k - 2 , k -1
+			x = 5, 67444e-06;		x = -1, 37721e-05;
+			y = 6, 36536e-16;		y = 4, 14043e-16;
+			f_calls = 56			f_calls = 56
+			Exit flag : -1			Exit flag : -1*/
 
 
 
-		//a = 10; b = 100;			//	te same wyniki
+		a = 10; b = 100;			//	te same wyniki
 
-							//x = 62,727;
-							//y = -0,921198;
-							//f_calls = 68
-							//Exit flag: 0
+						//x = 62,727;
+						//y = -0,921198;
+						//f_calls = 68
+						//Exit flag: 0
 
-		//opt = fib(funkcja_celu_lab_2, a, b, 1e-5);	
+		opt = fib(funkcja_celu_lab_2, a, b, 1e-5);	
 	}
 
 
 
 	// Tabela nr 1 -> ró¿ne alpha
 	{
-		//double  X0, d, alpha, zmiana;
+		double  X0, d, alpha, zmiana;
 
-		//alpha = 2.0;
-		//alpha = 1.75;
-		//alpha = 1.42;
+		alpha = 2.0;
+		alpha = 1.75;
+		alpha = 1.42;
 
-		//epsilon = 0.001;
+		epsilon = 0.001;
 
-		//X0 = -12; d = 1.0; Nmax = 1000;						// [36, 84]
-		//zmiana = 0.65;
+		X0 = -12; d = 1.0; Nmax = 1000;						// [36, 84]
+		zmiana = 0.65;
 
-		//for (int i = 0; i < 100; i++)
-		//{
-		//	double* borders = expansion(funkcja_celu_lab_2, X0, d, alpha, Nmax);
-		//	cout << X0 << " " << borders[0] << " " << borders[1] << " " << solution::f_calls;
-		//	X0 += zmiana;
-		//	solution::clear_calls();
-
-
-		//	opt = fib(funkcja_celu_lab_2, borders[0], borders[1], epsilon);
-		//	opt.my_pick();
-		//	solution::clear_calls();
+		for (int i = 0; i < 100; i++)
+		{
+			double* borders = expansion(funkcja_celu_lab_2, X0, d, alpha, Nmax);
+			cout << X0 << " " << borders[0] << " " << borders[1] << " " << solution::f_calls;
+			X0 += zmiana;
+			solution::clear_calls();
 
 
-		//	opt = lag(funkcja_celu_lab_2, borders[0], borders[1], epsilon, gamma, Nmax);
-		//	opt.my_pick();
-		//	solution::clear_calls();
+			opt = fib(funkcja_celu_lab_2, borders[0], borders[1], epsilon);
+			opt.my_pick();
+			solution::clear_calls();
 
-		//	cout << endl;
-		//	delete[] borders;
-		//}
+
+			opt = lag(funkcja_celu_lab_2, borders[0], borders[1], epsilon, gamma, Nmax);
+			opt.my_pick();
+			solution::clear_calls();
+
+			cout << endl;
+			delete[] borders;
+		}
 	}
 	
 	// Tabela nr 2 -> œrednie z wczeœniejszej tabeli
 
 	// Wykres -> przejœcie krok po kroku interacji i sprawdzanie b.x - a.x
 	{
-		/*cout << "Fibonachi" << endl;
+		cout << "Fibonachi" << endl;
 		solution::clear_calls();
 		opt = fib(funkcja_celu_lab_2, -100, 100, epsilon);
 		opt.my_pick();										cout << endl;
@@ -172,40 +172,46 @@ void lab1()
 		solution::clear_calls();
 		opt = lag(funkcja_celu_lab_2, -100, 100, epsilon, gamma, Nmax);
 		opt.my_pick();
-		solution::clear_calls();*/
+		solution::clear_calls();
 	}
 	
 	// Tabela nr 3
 	{
-		//solution fib_result = fib(ff1R, 0.0001, 0.01, 0.0000001, 0.0000001, 1000);
-		////solution fib_result = lag(ff1R, 0.0001, 0.01, 0.0000001, 0.0000001, 1000);
-		//cout << fib_result.x(0) << endl;
-		//cout << fib_result.y(0) << endl;
-		//cout << solution::f_calls << endl;
+		solution fib_result = fib(ff1R, 0.0001, 0.01, 0.0000001, 0.0000001, 1000);
+		//solution fib_result = lag(ff1R, 0.0001, 0.01, 0.0000001, 0.0000001, 1000);
+		cout << fib_result.x(0) << endl;
+		cout << fib_result.y(0) << endl;
+		cout << solution::f_calls << endl;
 	}
 
 	// Symulacja
 	{
-		//ofstream file("lab1_tabela_wynikow.csv");
-		//random_device rd;
-		//mt19937 gen(rd());
-		//uniform_real_distribution<double> distribution(-100.0, 100.0);
-		//if (!file.is_open()) {
-		//	cout << "file error" << endl;
-		//	return;
-		//}		
-		//	
-		////solution fib_result = fib(ff1R, 0.0001, 0.01, 0.0000001, 0.0000001, 1000);
-		//solution fib_result = lag(ff1R, 0.0001, 0.01, 0.0000001, 0.0000001, 1000);
-		//matrix Y0 = matrix(3, new double[3]{ 5, 1, 10 });
-		//matrix* Y = solve_ode(df1, 0, 1, 1000, Y0, NAN, fib_result.x(0));
-		//file << Y[1] << endl;
-		//file.close();
+		ofstream file("lab1_tabela_wynikow.csv");
+		random_device rd;
+		mt19937 gen(rd());
+		uniform_real_distribution<double> distribution(-100.0, 100.0);
+		if (!file.is_open()) {
+			cout << "file error" << endl;
+			return;
+		}		
+			
+		//solution fib_result = fib(ff1R, 0.0001, 0.01, 0.0000001, 0.0000001, 1000);
+		solution fib_result = lag(ff1R, 0.0001, 0.01, 0.0000001, 0.0000001, 1000);
+		matrix Y0 = matrix(3, new double[3]{ 5, 1, 10 });
+		matrix* Y = solve_ode(df1, 0, 1, 1000, Y0, NAN, fib_result.x(0));
+		file << Y[1] << endl;
+		file.close();
 	}
 }
 
 void lab2()
 {
+	solution Xopt;
+	matrix x(2, 1);
+	x(0) = 0.5;
+	x(1) = 1;
+	Xopt = HJ(funkcja_celu_lab_3, x, 1, 0.5, 1e-7, 1000);
+	cout << Xopt << endl;
 
 }
 
