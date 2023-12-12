@@ -250,14 +250,16 @@ void lab2()
 
 	/**/
 	double s = 0.85, alphaHJ = 0.5, alphaR = 1.3, beta = 0.5, epsilon = 1e-3, Nmax = 1000;
-	matrix s0(2, 1, s);
+	matrix s0(2, 1, 0.5);
 
 	//for (int i = 0; i < 100; i++)
 	{
 		//double* points = new double[2]{ dist(rng), dist(rng) };
 
-		double* points = new double[2]{ -0.54, 0.3 };
-		matrix x(2, points);		delete[] points;
+		//double* points = new double[2]{ 2.818104, 3.841883};
+		double* points = new double[2] {2.817589, 3.841482};
+		
+		matrix x(2, points);delete[] points;
 
 		copy = x;
 		cout << x(0) << " ";
@@ -278,7 +280,9 @@ void lab2()
 		cout << " ";
 		Xopt.clear_calls();
 		//Xopt = Rosen(funkcja_celu_lab_3, x, s0, alphaR, beta, epsilon, Nmax);
-		Xopt = Rosen(ff2R, x, s0, alphaR, beta, epsilon, Nmax);
+		//Xopt = Rosen(ff2R, x, s0, alphaR, beta, epsilon, Nmax);
+		matrix wyn;
+		wyn = ff2R(x);
 		//Xopt.my_pick();
 		cout << "\n";
 
@@ -334,13 +338,17 @@ void lab2()
 
 void lab3()
 {
-
-
-
+	//-0.5 do 6, 6 do 6
+	matrix x_start(2, 1);
+	x_start(0) = 1;
+	x_start(1) = 2;
+	solution Xopt = pen(Fun3, x_start, 1,1,0.0001,1000);
+	cout << Xopt;
 }
 
 void lab4()
 {
+	
 
 }
 

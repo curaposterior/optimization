@@ -208,8 +208,8 @@ void matrix::add_row(const matrix& c)
 
 matrix operator+(const matrix& A, const matrix& B)
 {
-	vec nA = get_size(A);
-	vec nB = get_size(B);
+	int* nA = get_size(A);
+	int* nB = get_size(B);
 	if (nA[0] == 1 && nA[1] == 1)
 	{
 		matrix C(B);
@@ -252,8 +252,8 @@ matrix operator-(const matrix& A, const matrix& B)
 
 matrix operator*(const matrix& A, const matrix& B)
 {
-	vec nA = get_size(A);
-	vec nB = get_size(B);
+	int* nA = get_size(A);
+	int* nB = get_size(B);
 	if (nA[0] == 1 && nA[1] == 1)
 	{
 		matrix C(B);
@@ -297,7 +297,7 @@ matrix operator/(const matrix& A, const matrix& B)
 
 matrix operator-(const matrix& A)
 {
-	vec n = get_size(A);
+	int* n = get_size(A);
 	matrix B(A);
 	for (int i = 0; i < n[0]; ++i)
 		for (int j = 0; j < n[1]; ++j)
@@ -307,8 +307,8 @@ matrix operator-(const matrix& A)
 
 bool operator<(const matrix& A, const matrix& B)
 {
-	vec nA = get_size(A);
-	vec nB = get_size(B);
+	int* nA = get_size(A);
+	int* nB = get_size(B);
 	if (nA[0] != 1 || nA[1] != 1 || nB[0] != 1 || nB[1] != 1)
 		throw string("bool operator<(const matrix&, const matrix&):\noperator relacji jest zdefiniwany tylko dla macierzy 1x1");
 	return A() < B();
@@ -316,8 +316,8 @@ bool operator<(const matrix& A, const matrix& B)
 
 bool operator>(const matrix& A, const matrix& B)
 {
-	vec nA = get_size(A);
-	vec nB = get_size(B);
+	int* nA = get_size(A);
+	int* nB = get_size(B);
 	if (nA[0] != 1 || nA[1] != 1 || nB[0] != 1 || nB[1] != 1)
 		throw string("bool operator>(const matrix&, const matrix&):\noperator relacji jest zdefiniwany tylko dla macierzy 1x1");
 	return A() > B();
@@ -325,8 +325,8 @@ bool operator>(const matrix& A, const matrix& B)
 
 bool operator<=(const matrix& A, const matrix& B)
 {
-	vec nA = get_size(A);
-	vec nB = get_size(B);
+	int* nA = get_size(A);
+	int* nB = get_size(B);
 	if (nA[0] != 1 || nA[1] != 1 || nB[0] != 1 || nB[1] != 1)
 		throw string("bool operator<=(const matrix&, const matrix&):\noperator relacji jest zdefiniwany tylko dla macierzy 1x1");
 	return A() <= B();
@@ -334,8 +334,8 @@ bool operator<=(const matrix& A, const matrix& B)
 
 bool operator>=(const matrix& A, const matrix& B)
 {
-	vec nA = get_size(A);
-	vec nB = get_size(B);
+	int* nA = get_size(A);
+	int* nB = get_size(B);
 	if (nA[0] != 1 || nA[1] != 1 || nB[0] != 1 || nB[1] != 1)
 		throw string("bool operator>=(const matrix&, const matrix&):\noperator relacji jest zdefiniwany tylko dla macierzy 1x1");
 	return A() >= B();
@@ -343,8 +343,8 @@ bool operator>=(const matrix& A, const matrix& B)
 
 bool operator==(const matrix& A, const matrix& B)
 {
-	vec nA = get_size(A);
-	vec nB = get_size(B);
+	int* nA = get_size(A);
+	int* nB = get_size(B);
 	if (nA[0] != 1 || nA[1] != 1 || nB[0] != 1 || nB[1] != 1)
 		throw string("bool operator==(const matrix&, const matrix&):\noperator relacji jest zdefiniwany tylko dla macierzy 1x1");
 	return A() == B();
@@ -352,8 +352,8 @@ bool operator==(const matrix& A, const matrix& B)
 
 bool operator!=(const matrix& A, const matrix& B)
 {
-	vec nA = get_size(A);
-	vec nB = get_size(B);
+	int* nA = get_size(A);
+	int* nB = get_size(B);
 	if (nA[0] != 1 || nA[1] != 1 || nB[0] != 1 || nB[1] != 1)
 		throw string("bool operator!=(const matrix&, const matrix&):\noperator relacji jest zdefiniwany tylko dla macierzy 1x1");
 	return A() != B();
@@ -413,7 +413,7 @@ matrix randn_mat(int nv, int mv)
 
 double m2d(const matrix& A)
 {
-	vec nA = get_size(A);
+	int* nA = get_size(A);
 	if (nA[0] != 1 || nA[1] != 1)
 		throw string("double m2d(const matrix&):\nzamiana macierzy na liczbe mozliwa jest tylko dla skalarow");
 	return A(0, 0);
@@ -421,7 +421,7 @@ double m2d(const matrix& A)
 
 double det(const matrix& A)
 {
-	vec nA = get_size(A);
+	int* nA = get_size(A);
 	if (nA[0] != nA[1])
 		throw string("double det(const matrix&):\nmacierz musi byc kwadratowa");
 	double D = 0;
@@ -448,7 +448,7 @@ matrix inv(const matrix& A)
 		double D = det(A);
 		if (D == 0)
 			throw string("matrix inv(const matrix&):\nwyznacznik macierzy wynosi 0");
-		vec nA = get_size(A);
+		int* nA = get_size(A);
 		matrix I(nA[0], nA[0]);
 		if (nA[0] == 1)
 			I() = 1 / A();
@@ -475,7 +475,7 @@ matrix inv(const matrix& A)
 
 matrix trans(const matrix& A)
 {
-	vec nA = get_size(A);
+	int* nA = get_size(A);
 	matrix B(nA[1], nA[0]);
 	for (int i = 0; i < nA[1]; ++i)
 		for (int j = 0; j < nA[0]; ++j)
@@ -487,7 +487,7 @@ matrix pow(const matrix& A, int n)
 {
 	if (n < 0)
 		throw string("matrix pow(const matrix&,int):\nwykladnik potegi nie moze byc ujemny");
-	vec nA = get_size(A);
+	int* nA = get_size(A);
 	if (nA[0] != nA[1])
 		throw string("matrix pow(const matrix&,int):\npotegowanie jest mozliwe tylko dla macierzy kwadratowych");
 	matrix B = ident_mat(nA[0]);
@@ -498,7 +498,7 @@ matrix pow(const matrix& A, int n)
 
 double norm(const matrix& A)
 {
-	vec nA = get_size(A);
+	int* nA = get_size(A);
 	if (nA[1] != 1)
 		throw string("double norm(const matrix&):\nnorma jest zdefiniowana tylko dla wektorow pionowych");
 	double N = 0;
@@ -509,8 +509,8 @@ double norm(const matrix& A)
 
 matrix hcat(const matrix& A, const matrix& B)
 {
-	vec nA = get_size(A);
-	vec nB = get_size(B);
+	int* nA = get_size(A);
+	int* nB = get_size(B);
 	if (nA[0] != nB[0])
 		throw string("matrix hcat(const matrix&,const matrix&):\nliczba wierszy macierzy musi byc taka sama");
 	matrix C(nA[0], nA[1] + nB[1]);
@@ -526,8 +526,8 @@ matrix hcat(const matrix& A, const matrix& B)
 
 matrix vcat(const matrix& A, const matrix& B)
 {
-	vec nA = get_size(A);
-	vec nB = get_size(B);
+	int* nA = get_size(A);
+	int* nB = get_size(B);
 	if (nA[1] != nB[1])
 		throw string("matrix vcat(const matrix&,const matrix&):\nliczba kolumn macierzy musi byc taka sama");
 	matrix C(nA[0] + nB[0], nA[1]);
@@ -542,7 +542,7 @@ matrix vcat(const matrix& A, const matrix& B)
 
 matrix get_col(const matrix& A, int mv)
 {
-	vec n = get_size(A);
+	int* n = get_size(A);
 	if (mv >= n[1] || mv < 0)
 		throw string("matrix get_col(const matrix&,int):\nnumer kolmuny jest poza zakresem");
 	matrix B(n[0], 1);
@@ -553,7 +553,7 @@ matrix get_col(const matrix& A, int mv)
 
 matrix get_row(const matrix& A, int nv)
 {
-	vec n = get_size(A);
+	int* n = get_size(A);
 	if (nv >= n[0] || nv < 0)
 		throw string("matrix get_row(const matrix&,int):\nnumer wiersza jest poza zakresem");
 	matrix B(1, n[1]);
@@ -564,7 +564,7 @@ matrix get_row(const matrix& A, int nv)
 
 ostream& operator<<(ostream& OS, const matrix& A)
 {
-	vec nA = get_size(A);
+	int* nA = get_size(A);
 	ostringstream OSS;
 	string S;
 	string::size_type p;
@@ -591,7 +591,7 @@ istream& operator>>(istream& IS, matrix& A)
 	istringstream ISS;
 	string S;
 	string::size_type p;
-	vec nA = get_size(A);
+	int* nA = get_size(A);
 	for (int i = 0; i < nA[0]; ++i)
 		for (int j = 0; j < nA[1]; ++j)
 		{
@@ -610,14 +610,7 @@ istream& operator>>(istream& IS, matrix& A)
 	return IS;
 }
 
-vec get_size(const matrix& A)
-{
-	//int* s = new int[2]{ A.n, A.m };
-	vec s({A.n, A.m});
-	return s;
-}
-
-int* get_sizeee(const matrix& A)
+int* get_size(const matrix& A)
 {
 	int* s = new int[2]{ A.n, A.m };
 	return s;

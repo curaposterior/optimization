@@ -9,7 +9,7 @@ matrix* solve_ode(matrix(*diff)(double, matrix, matrix, matrix), double t0, doub
 		int N = static_cast<int>(floor((tend - t0) / dt) + 1);
 		if (N < 2)
 			throw string("matrix* solve_ode(...):\nprzedzial czasu nie jest zdefiniowany poprawnie");
-		int* s = get_sizeee(Y0);
+		int* s = get_size(Y0);
 		if (s[1] != 1)
 			throw string("matrix* solve_ode(...):\nwarunek poczatkowy musi byc wektorem pionowym");
 		int n = s[0];

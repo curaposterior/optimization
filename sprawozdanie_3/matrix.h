@@ -8,20 +8,15 @@
 #include<fstream>
 #include<random>
 #include<chrono>
-#include<vector>
 using namespace std;
 
 #define SEP_SYMBOL ','
-
-typedef std::vector<int> vec;
-typedef std::vector<double> ved;
 
 class matrix
 {
 	int n, m;
 	double** M;
-	friend vec get_size(const matrix&);
-	friend int* get_sizeee(const matrix&);
+	friend int* get_size(const matrix&);
 	friend int get_len(const matrix&); // throw (string);
 public:
 	matrix(double = 0.0);

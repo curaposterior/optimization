@@ -1,6 +1,7 @@
 #include"user_funs.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include "opt_alg.h"
 
 matrix ff0T(matrix x, matrix ud1, matrix ud2)
 {
@@ -90,8 +91,8 @@ static const double b_t = 0.5;
 // y - [alfa(t), omega(t)], ud1 - [alfa_ref, omega_ref], ud2 (x) - [k1, k2]
 matrix df2(double t, matrix y, matrix ud1, matrix ud2)
 {
-	ved point(0, 0);
-	matrix dY = matrix(2, point.data());
+	double* point = new double[2]{};
+	matrix dY = matrix(2, point); delete[] point;
 	dY(0) = y(1);
 	double I_b = m_robot * pow(l_robot, 2) / 3 + m_c * pow(l_robot, 2);
 	double M_t = ud2(0) * (ud1(0) - y(0)) + ud2(1) * (ud1(1) - y(1));
@@ -101,27 +102,18 @@ matrix df2(double t, matrix y, matrix ud1, matrix ud2)
 
 matrix ff2R(matrix x, matrix ud1, matrix ud2)
 {
-	ved point(0.0, 0.0);
-	matrix y0 = matrix(2, point.data());
+	double* point = new double[2]{ 0., 0. };
+	matrix y0 = matrix(2, point); delete[] point;
 
-	point[0] = M_PI; point[1] = 0.0;
-	matrix y_ref(2, point.data());
+	point = new double[2]{ M_PI, 0. };
+	matrix y_ref(2, point); delete[] point;
 
 	matrix* Y = solve_ode(df2, 0, 0.1, 100, y0, y_ref, x);
 	matrix y = 0.;
 	int n = get_len(Y[0]);
 
 	ofstream FILE("output.txt");
-	for (int i = 0; i < n; i++)
-	{
-		double alfa = y_ref(0) - Y[1](i, 0);
-		double omega = y_ref(1) - Y[1](i, 1);
-
-		FILE << alfa << " " << omega << endl;
-
-		double M_t = x(0) * alfa + x(1) * omega;
-		y = y + 10 * pow(alfa, 2) + pow(omega, 2) + pow(M_t, 2);
-	}
+	FILE << Y[1];
 	FILE.close();
 
 	delete[] Y;
@@ -129,9 +121,177 @@ matrix ff2R(matrix x, matrix ud1, matrix ud2)
 	return y * 0.1;
 }
 
-matrix funkcja_celu_lab_4(matrix x, matrix ud1, matrix ud2)
-{
+matrix Fun3(matrix x1, matrix x2, matrix ud1) {
+	return (sin(M_PI * sqrt(pow(x1() / M_PI, 2) + pow(x2() / M_PI, 2)))) / (M_PI * sqrt(pow(x1() / M_PI, 2) + pow(x2() / M_PI, 2)));
+}
+
+bool g1(matrix x1) {
+	if (-x1() + 1 <= 0)
+		return true;
+	else
+		return false;
+}
+bool g2(matrix x2) {
+	if (-x2() + 1 <= 0)
+		return true;
+	else
+		return false;
+}
+bool g3(matrix x1, matrix x2, double alpha) {
+	if (sqrt(pow(x1(), 2) + pow(x2(), 2)) - alpha <= 0)
+		return true;
+	else
+		return false;
+}
+
+matrix df3(double t, matrix Y, matrix ud1, matrix ud2) {
+	double C = 0.47;
+	double r = 0.12; // 12 cm
+	double m = 0.6; // 600 g
+	double ro = 1.2; // 1.2 kg/m3
+	double g = 9.81; // 9.81 m/s2
+
+	double S = M_PI * pow(r, 2);
+
+	double Dx = 0.5 * C * ro * S * Y(1) * abs(Y(1));
+	double Dy = 0.5 * C * ro * S * Y(3) * abs(Y(3));
+
+	double Fmx = M_PI * ro * Y(3) * m2d(ud2) * pow(r, 3);
+	double Fmy = M_PI * ro * Y(1) * m2d(ud2) * pow(r, 3);
+
+	matrix dY(4, 1);
+	dY(0) = Y(1);
+	dY(1) = (-Dx - Fmx) / m;
+	dY(2) = Y(3);
+	dY(3) = (-m * g - Dy - Fmy) / m;
+
+	return dY;
+}
+
+matrix fR3(matrix x, matrix ud1, matrix ud2) {
 	matrix y;
-	y = ((std::sin(M_PI * sqrt(((pow(x(0) / M_PI, 2) + pow(x(1) / M_PI, 2)))))) / (sqrt(((pow(x(0) / M_PI, 2) + pow(x(1) / M_PI, 2))))));
+	matrix Y0(4, new double[4] { 0, x(0), 100, 0 });
+	matrix* Y = solve_ode(df3, 0, 0.01, 7, Y0, ud1, x(1)); // to ud1?
+	int n = get_len(Y[0]);
+	int i0 = 0, i50 = 0;
+
+	//cout << x(0) << " " << x(1) << endl;
+
+	for (int i = 0; i < n; i++) {
+		if (abs(Y[1](i, 2) - 50) < abs(Y[1](i50, 2) - 50))
+			i50 = i;
+		if (abs(Y[1](i, 2)) < abs(Y[1](i0, 2)))
+			i0 = i;
+
+		cout << Y[1](i, 0) << ";";
+		//cout << Y[1](i, 1) << ";";
+		cout << Y[1](i, 2) << ";";
+		//cout << Y[1](i, 3) << ";";
+		cout << endl;
+	}
+
+	y = -Y[1](i0, 0);
+
+	if (abs(x(0)) - 10 > 0)
+		y = y + ud2 * pow(abs(x(0)) - 10, 2);
+	if (abs(x(1)) - 25 > 0)
+		y = y + ud2 * pow(abs(x(1)) - 25, 2);
+	if (abs(Y[1](i50, 0) - 5) - 1 > 0)
+		y = y + ud2 * pow(abs(Y[1](i50, 0) - 5) - 1, 2);
+
+	//cout << Y0(0) << " " << Y0(1) << " " << Y0(2) << " " << Y0(3) << endl;
+	//cout << x(0) << " " << x(1) << endl; // z optymalnego dla tego uruchomic symulacje
+
+	//cout << "y = " << y << endl;
+
+	return y;
+}
+
+matrix fun3(matrix x, matrix ud1, matrix ud2) {
+	double arg = M_PI * sqrt(pow(x(0) / M_PI, 2) + pow(x(1) / M_PI, 2));
+	matrix y = sin(arg) / arg;
+	// y = pow(x(0),2) + pow(x(1),2);
+
+	if (ud2(1) > 1) { //kara zew
+		if (-x(0) + 1 > 0)		// g1
+			y = y + (ud2)(0) * pow(-x(0) + 1, 2);
+		if (-x(1) + 1 > 0)		// g2
+			y = y + (ud2)(0) * pow(-x(1) + 1, 2);
+		if (norm(x) - (ud1)(0) > 0)  // g3
+			y = y + (ud2)(0) * pow(norm(x) - (ud1)(0), 2);
+	}
+	else { //kara wew
+		if (-x(0) + 1 > 0)
+			y = 1e10;
+		else
+			y = y - (ud2)(0) / (-x(0) + 1);
+
+		if (-x(1) + 1 > 0)
+			y = 1e10;
+		else
+			y = y - (ud2)(0) / (-x(1) + 1);
+
+		if (norm(x) - (ud1)(0) > 0)
+			y = 1e10;
+		else
+			y = y - (ud2)(0) / (sqrt(pow(x(0), 2) + pow(x(1), 2)) - (ud1)(0));
+	}
+	return y;
+}
+
+
+
+matrix fun4(matrix x, matrix ud1, matrix ud2) {
+	return pow(x(0) + 2 * x(1) - 7, 2) + pow(2 * x(0) + x(1) - 5, 2);
+}
+
+matrix grad4(matrix x, matrix ud1, matrix ud2) {
+	matrix g(2, 1);
+	g(0) = 10 * x(0) + 8 * x(1) - 34;
+	g(1) = 8 * x(0) + 10 * x(1) - 38;
+	return g;
+}
+
+matrix hesj4(matrix x, matrix ud1, matrix ud2) {
+	matrix H(2, 2);
+	H(0, 0) = 10;
+	H(0, 1) = 8;
+	H(1, 0) = 8;
+	H(1, 1) = 10;
+	return H;
+}
+
+matrix fT4(matrix x, matrix ud1, matrix ud2) {
+	matrix y;
+
+	if (isnan(ud2(0, 0)))
+		y = pow(x(0) + 2 * x(1) - 7, 2) + pow(2 * x(0) + x(1) - 5, 2);
+	else
+		y = fT4(ud2[0] + x * ud2[1], 0, ud1);
+	return y;
+}
+
+matrix fR4(matrix x, matrix ud1, matrix ud2) {
+	matrix y;
+	int m = 100;
+	int n = get_len(x);
+	static matrix X(n, m), Y(1, m);
+	if (solution::f_calls == 1) {
+		ifstream in("XData.txt");
+		in >> X;
+		in.close();
+		in.open("YData.txt");
+		in >> Y;
+		in.close();
+	}
+	int P = 0;
+	double h;
+	y = 0;
+	for (int i = 0; i < m; i++) {
+		h = m2d(trans(x) * X[i]);
+		h = 1.0 / (1.0 + exp(-h));
+		y = y - Y(0, i) * log(h) - (1 - Y(0, i)) * log(1 - h);
+	}
+	y = y / m;
 	return y;
 }

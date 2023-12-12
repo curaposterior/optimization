@@ -702,16 +702,23 @@ solution Rosen(matrix(*ff)(matrix, matrix, matrix), matrix x0, matrix s0, double
 	}
 }
 
-
-
 solution pen(matrix(*ff)(matrix, matrix, matrix), matrix x0, double c, double dc, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {
 	try {
-		solution Xopt;
-		
-
-
-		return Xopt;
+		//solution Xopt;
+		double alpha = 1, beta = 0.5, gamma = 2, delta = 0.5, s = 0.5;
+		solution X(x0), X1;
+		matrix c0(2, new double[2] { c, dc });
+		while (true) {
+			X1 = sym_NM(ff, X.x, s, alpha, beta, gamma, delta, epsilon, Nmax, ud1, c0);
+			if (norm(X1.x - X.x) < epsilon || solution::f_calls > Nmax) {
+				X1.flag = 0;
+				return X1;
+			}
+			X = X1;
+			c0(0) = c0(0) * dc;
+		}
+		//return Xopt;
 	}
 	catch (string ex_info)
 	{
@@ -723,23 +730,82 @@ solution sym_NM(matrix(*ff)(matrix, matrix, matrix), matrix x0, double s, double
 {
 	try
 	{
-		solution Xopt;
-		//Tu wpisz kod funkcji
+		//solution Xopt;
+		int n = get_len(x0);
+		matrix D = ident_mat(n);
+		int N = n + 1;
+		solution* S = new solution[N];
+		S[0].x = x0;
+		S[0].fit_fun(ff, ud1, ud2);
 
-		return Xopt;
+		for (int i = 1; i < N; ++i) {
+			S[i].x = S[0].x + s * D[i - 1];
+			S[i].fit_fun(ff, ud1, ud2);
+		}
+
+		solution PR, PE, PN;
+		matrix pc;
+		int i_min, i_max;
+
+		while (true) {
+			i_min = i_max = 0;
+			for (int i = 1; i < N; ++i) {
+				if (S[i].y(0) < S[i_min].y(0))
+					i_min = i;
+				if (S[i].y(0) > S[i_max].y(0))
+					i_max = i;
+			}
+
+			pc = matrix(n, 1);
+
+			for (int i = 0; i < N; ++i)
+				if (i != i_max)
+					pc = pc + S[i].x;
+
+			pc = pc / (N - 1);
+			PR.x = pc + alpha * (pc - S[i_max].x);
+			PR.fit_fun(ff, ud1, ud2);
+
+			if (PR.y(0) < S[i_max].y(0) && S[i_min].y(0) <= PR.y(0))
+				S[i_max] = PR;
+			else if (PR.y(0) < S[i_min].y(0)) {
+				PE.x = pc + gamma * (PR.x - pc);
+				PE.fit_fun(ff, ud1, ud2);
+
+				if (PE.y(0) < PR.y(0))
+					S[i_max] = PE;
+				else
+					S[i_max] = PR;
+			}
+			else {
+				PN.x = pc + beta * (S[i_max].x - pc);
+				PN.fit_fun(ff, ud1, ud2);
+				if (PN.y(0) < S[i_max].y(0))
+					S[i_max] = PN;
+				else {
+					for (int i = 0; i < N; ++i)
+						if (i != i_min) {
+							S[i].x = delta * (S[i].x + S[i_min].x);
+							S[i].fit_fun(ff, ud1, ud2);
+						}
+				}
+			}
+			double max_s = norm(S[i_min].x - S[0].x);
+
+			for (int i = 1; i < N; ++i)
+				if (max_s < norm(S[i_min].x - S[i].x))
+					max_s = norm(S[i_min].x - S[i].x);
+
+			if (max_s < epsilon)
+				return S[i_min];
+		}
+		//return Xopt;
 	}
 	catch (string ex_info)
 	{
 		throw ("solution sym_NM(...):\n" + ex_info);
 	}
 }
-
-
-
-
-
-
-
 
 solution SD(matrix(*ff)(matrix, matrix, matrix), matrix(*gf)(matrix, matrix, matrix), matrix x0, double h0, double epsilon, int Nmax, matrix ud1, matrix ud2)
 {

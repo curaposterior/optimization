@@ -15,6 +15,24 @@ matrix ff1R(matrix x, matrix = NAN, matrix = NAN);
 
 matrix funkcja_celu_lab_3(matrix, matrix = NAN, matrix = NAN);
 
-matrix df2(double t, matrix y, matrix ud1, matrix ud2);
+matrix df2(double t, matrix y, matrix ud1 = NAN, matrix ud2 = NAN);
 
-matrix ff2R(matrix x, matrix ud1, matrix ud2);
+matrix ff2R(matrix x, matrix ud1 = NAN, matrix ud2 = NAN);
+
+matrix Fun3(matrix x1, matrix x2, matrix ud1);
+
+bool g1(matrix x1);
+
+bool g2(matrix x2);
+
+bool g3(matrix x1, matrix x2, double alpha);
+
+matrix df3(double t, matrix Y, matrix ud1, matrix ud2);
+
+matrix fR3(matrix x, matrix ud1, matrix ud2);
+
+matrix fun3(matrix x, matrix ud1, matrix ud2);
+
+matrix fun4(matrix x, matrix ud1, matrix ud2);
+
+matrix grad4(matrix x, matrix ud1, matrix ud2);
