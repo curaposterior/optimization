@@ -121,27 +121,24 @@ matrix ff2R(matrix x, matrix ud1, matrix ud2)
 	return y * 0.1;
 }
 
+/* Instrukcja 3 */
+
 matrix Fun3(matrix x1, matrix x2, matrix ud1) {
-	return (sin(M_PI * sqrt(pow(x1() / M_PI, 2) + pow(x2() / M_PI, 2)))) / (M_PI * sqrt(pow(x1() / M_PI, 2) + pow(x2() / M_PI, 2)));
+	return (sin(M_PI * sqrt(pow(x1() / M_PI, 2)+pow(x2() / M_PI, 2)))) / (M_PI * sqrt(pow(x1() / M_PI, 2)+pow(x2() / M_PI, 2)));
 }
 
 bool g1(matrix x1) {
-	if (-x1() + 1 <= 0)
-		return true;
-	else
-		return false;
+	if (-x1() + 1 <= 0) return true;
+	else return false;
 }
 bool g2(matrix x2) {
-	if (-x2() + 1 <= 0)
-		return true;
-	else
-		return false;
+	if (-x2() + 1 <= 0) return true;
+	else return false;
 }
 bool g3(matrix x1, matrix x2, double alpha) {
 	if (sqrt(pow(x1(), 2) + pow(x2(), 2)) - alpha <= 0)
 		return true;
-	else
-		return false;
+	else return false;
 }
 
 matrix df3(double t, matrix Y, matrix ud1, matrix ud2) {
@@ -163,56 +160,63 @@ matrix df3(double t, matrix Y, matrix ud1, matrix ud2) {
 	dY(0) = Y(1);
 	dY(1) = (-Dx - Fmx) / m;
 	dY(2) = Y(3);
-	dY(3) = (-m * g - Dy - Fmy) / m;
-
+	dY(3) = ((-m * g) - Dy - Fmy) / m;
 	return dY;
 }
 
 matrix fR3(matrix x, matrix ud1, matrix ud2) {
 	matrix y;
 	matrix Y0(4, new double[4] { 0, x(0), 100, 0 });
-	matrix* Y = solve_ode(df3, 0, 0.01, 7, Y0, ud1, x(1)); // to ud1?
+	matrix* Y = solve_ode(df3, 0, 0.01, 7, Y0, ud1, x(1));
 	int n = get_len(Y[0]);
-	int i0 = 0, i50 = 0;
+	int i0 = 0, 
+	int i50 = 0;
 
-	//cout << x(0) << " " << x(1) << endl;
-
+	ofstream FILE("out.txt"); // zapis danych
+	double t = 0;
 	for (int i = 0; i < n; i++) {
 		if (abs(Y[1](i, 2) - 50) < abs(Y[1](i50, 2) - 50))
 			i50 = i;
 		if (abs(Y[1](i, 2)) < abs(Y[1](i0, 2)))
 			i0 = i;
 
-		cout << Y[1](i, 0) << ";";
+		//cout << t << ";";
+		//FILE << t << ";";
+		t += 0.01;
+		//cout << Y[1](i, 0) << ";";
+		//FILE << Y[1](i, 0) << ";";
 		//cout << Y[1](i, 1) << ";";
-		cout << Y[1](i, 2) << ";";
+		//cout << Y[1](i, 2) << ";";
+		//FILE << Y[1](i, 2) << ";";
 		//cout << Y[1](i, 3) << ";";
-		cout << endl;
+		//cout << endl;
+		//FILE << endl;
 	}
+	FILE.close();
 
 	y = -Y[1](i0, 0);
 
+	int zmiana = 23;
+
 	if (abs(x(0)) - 10 > 0)
 		y = y + ud2 * pow(abs(x(0)) - 10, 2);
-	if (abs(x(1)) - 25 > 0)
-		y = y + ud2 * pow(abs(x(1)) - 25, 2);
+	if (abs(x(1)) - zmiana > 0)
+		y = y + ud2 * pow(abs(x(1)) - zmiana, 2);
 	if (abs(Y[1](i50, 0) - 5) - 1 > 0)
 		y = y + ud2 * pow(abs(Y[1](i50, 0) - 5) - 1, 2);
 
-	//cout << Y0(0) << " " << Y0(1) << " " << Y0(2) << " " << Y0(3) << endl;
-	//cout << x(0) << " " << x(1) << endl; // z optymalnego dla tego uruchomic symulacje
-
-	//cout << "y = " << y << endl;
+	cout << Y0(0) << " " << Y0(1) << " " << Y0(2) << " " << Y0(3) << endl;
+	cout << x(0) << " " << x(1) << endl;
+	cout << "y = " << y << endl;
 
 	return y;
 }
 
 matrix fun3(matrix x, matrix ud1, matrix ud2) {
-	double arg = M_PI * sqrt(pow(x(0) / M_PI, 2) + pow(x(1) / M_PI, 2));
-	matrix y = sin(arg) / arg;
-	// y = pow(x(0),2) + pow(x(1),2);
+	double val = M_PI * sqrt(pow(x(0) / M_PI, 2) + pow(x(1) / M_PI, 2));
+	matrix y = sin(val) / val;
 
-	if (ud2(1) > 1) { //kara zew
+	if (ud2(1) > 1) { //f. kara zew
 		if (-x(0) + 1 > 0)		// g1
 			y = y + (ud2)(0) * pow(-x(0) + 1, 2);
 		if (-x(1) + 1 > 0)		// g2
@@ -220,12 +224,11 @@ matrix fun3(matrix x, matrix ud1, matrix ud2) {
 		if (norm(x) - (ud1)(0) > 0)  // g3
 			y = y + (ud2)(0) * pow(norm(x) - (ud1)(0), 2);
 	}
-	else { //kara wew
+	else { //f. kara wew
 		if (-x(0) + 1 > 0)
 			y = 1e10;
 		else
 			y = y - (ud2)(0) / (-x(0) + 1);
-
 		if (-x(1) + 1 > 0)
 			y = 1e10;
 		else
@@ -239,7 +242,7 @@ matrix fun3(matrix x, matrix ud1, matrix ud2) {
 	return y;
 }
 
-
+/* Instrukcja 4 */
 
 matrix fun4(matrix x, matrix ud1, matrix ud2) {
 	return pow(x(0) + 2 * x(1) - 7, 2) + pow(2 * x(0) + x(1) - 5, 2);

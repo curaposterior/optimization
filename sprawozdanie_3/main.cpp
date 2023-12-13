@@ -336,15 +336,118 @@ void lab2()
 	*/
 }
 
+/*
+void lab3()
+{	
+	//// ============= arkusz 1 ===============
+	//solution opt_3;
+	//double r;
+	//srand(time(NULL));
+	//int c0 = 2;
+	//int dc;
+	//int eps = 1e-8;
+	//int Nmax = 1000;
+
+	//// zmiana w kazdym z 3 przypadkow
+	////matrix a = 4;
+	////matrix a = 4.4934;
+	//matrix a = 5;
+
+
+	//for (int i = 0; i < 100; i++) {
+	//	double x0_1 = (rand() % 10000) / 10000.0f;
+	//	double x0_2 = (rand() % 10000) / 10000.0f;
+	//	matrix x0(2, 1, 0.0f);
+	//	x0.set_row(x0_1, 0);
+	//	x0.set_row(x0_2, 1);
+
+	//	// zewnetrzne
+	//	dc = 2;
+	//	solution::clear_calls();
+	//	std::cout << x0_1 << "\t" << x0_2 << "\t";
+	//	opt_3 = pen(fun3, x0, c0, dc, eps, Nmax, a);
+	//	r = norm(opt_3.x);
+	//	std::cout << opt_3.x(0) << "\t" << opt_3.x(1) << "\t" <<
+	//	r << "\t" << opt_3.y << "\t" << solution::f_calls << "\t";
+
+	//	// wewnetrzne
+	//	dc = 0.5;
+	//	solution::clear_calls();
+	//	opt_3 = pen(fun3, x0, c0, dc, eps, Nmax, a);
+	//	r = norm(opt_3.x);
+	//	std::cout << opt_3.x(0) << "\t" << opt_3.x(1) << "\t" <<
+	//	r << "\t" << opt_3.y << "\t" << solution::f_calls << "\n";
+	//}	
+	// ============ problem rzezczywisty =================
+std::cout << pen(fR3, matrix(2, 1, 2), 1, 2, 1e-5, 10000, 4);
+}
+*/
+
 void lab3()
 {
-	//-0.5 do 6, 6 do 6
-	matrix x_start(2, 1);
-	x_start(0) = 1;
-	x_start(1) = 2;
-	solution Xopt = pen(Fun3, x_start, 1,1,0.0001,1000);
-	cout << Xopt;
+	matrix x0 = matrix(2, 1, 1.0);
+
+	double c0 = 1;
+	const double epsilon = 1e-3;
+	const int Nmax = 10000;
+
+	matrix a[3] = { 4, 4.4934, 5 };
+	const int ktory = 2;
+	
+	double pkt1[101] = { 0 };
+	double pkt2[101] = { 0 };
+
+	for (int i = 0; i < 101; i++) {
+		do
+			x0 = 5 * rand_mat(2, 1) + 1;
+		while (norm(x0) > a[ktory]);
+
+		pkt1[i] = x0(0);
+		pkt2[i] = x0(1);
+	}
+	
+	
+	//for (int i = 0; i < 100; i++) {
+	//	x0(0) = pkt1[i];
+	//	x0(1) = pkt2[i];
+
+	//	cout << x0(0) << " " << x0(1) << " ";
+
+	//	solution zew_opt = pen(fun3, x0, c0, 2, epsilon, Nmax, a[ktory]);
+	//	cout << zew_opt.x(0) << " " << zew_opt.x(1) << " " << norm(zew_opt.x) << " " << zew_opt.y[0] << solution::f_calls << " ";
+	//	solution::clear_calls();
+
+	//	solution wew_opt = pen(fun3, x0, c0, 0.5, epsilon, Nmax, a[ktory]);
+	//	cout << wew_opt.x(0) << " " << wew_opt.x(1) << " " << norm(wew_opt.x) << " " << wew_opt.y[0] << solution::f_calls << endl;
+	//	solution::clear_calls();
+	//}
+	
+
+	// Problem rzeczywisty
+	
+	matrix x1 = matrix(2, 1);
+	x1(0) = 0.;
+	x1(1) = 0.;
+
+	//x0(0) = pkt1[100];
+	//x0(1) = pkt2[100];
+	//solution pr_rzeczywisty = pen(fR3, x0, c0, 2, epsilon, Nmax, a[ktory]);
+	//cout << pr_rzeczywisty.x(0) << " " << pr_rzeczywisty.x(1) << " " << norm(pr_rzeczywisty.x) << " " << pr_rzeczywisty.y[0] << solution::f_calls << " ";
+	
+
+
+	//cout << pen(fR3, x1, c0, 2, epsilon, Nmax) << endl;
+
+	//-3.3473 25.0006
+	
+	x1(0) = -3.88; // -10  10
+	x1(1) = 9.14; // -23  23
+
+	cout << pen(fR3, x1, c0, 2, epsilon, Nmax) << endl;
+	//fR3(x1, c0, 2);
+	cout << solution::f_calls << endl;;
 }
+
 
 void lab4()
 {
